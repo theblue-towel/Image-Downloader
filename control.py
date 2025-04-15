@@ -1,0 +1,146 @@
+from verifier import Verifier
+from synchronizer import Sync
+
+
+# Massive list of search terms for dessert-related images
+# CHANGE THIS TO YOUR OWN SEARCH TERMS and rename the variable
+
+dessert_search_terms = [
+    "chocolate lava cake images", "strawberry cheesecake slice photos", "fruit tart with glaze pictures",
+    "ice cream sundae bar ideas", "cupcake tower display images", "fancy sugar cookie decoration ideas",
+    "artisan pie crust lattice designs", "layered chocolate mousse dessert images", "creme brulee torching process",
+    "french eclair chocolate glaze", "candy apple caramel drizzle photography", "gelato scoops with toppings",
+    "colorful macaron stack images", "decadent brownie stack photos", "rainbow sorbet scoop presentations",
+    "cake pop bouquet ideas", "elegant dessert table settings", "chocolate truffle assortment photography",
+    "baklava honey drizzle images", "tiramisu with cocoa dusting photos", "white chocolate raspberry mousse",
+    "fruit parfait layered in glass", "mini bundt cake icing drips", "holiday gingerbread house displays",
+    "gold leaf decorated desserts", "fluffy pancake stack with syrup", "rolled cinnamon buns fresh from oven",
+    "handmade almond brittle photography", "gourmet s’mores variations", "whimsical birthday cake decorations",
+    "multi-layered wedding cake designs", "velvet cake slice on plate", "blueberry cheesecake swirls",
+    "honey-drizzled baklava pastry photos", "matcha-flavored desserts plating", "cookie sandwich ice cream images",
+    "rainbow-colored crepe cake slices", "Japanese taiyaki fish-shaped dessert", "dark chocolate-dipped strawberries",
+    "mini tartlet platter arrangements", "soft and chewy mochi ice cream", "artistic chocolate drizzle designs",
+    "rolled pastry with cream filling", "coconut cream pie topping swirls", "gold-dusted chocolate pralines",
+    "fruit-infused panna cotta images", "marshmallow hot cocoa art", "waffle cone filled with fruit",
+    "sprinkled doughnut variety photography", "pastel-colored meringue kisses", "buttery scone with jam and cream",
+    "stacked profiteroles with caramel drizzle", "decadent peanut butter brownies", "fresh berry cobbler in skillet",
+    "candy cane-themed holiday desserts", "lemon curd tartlets in mini cups", "double chocolate chip cookie photography",
+    "fudge swirl milkshake glass", "coffee-infused tiramisu dessert images", "cream-filled cannoli dusted with sugar",
+    "raspberry mousse dome presentation", "decorative cake topper ideas", "strawberry shortcake plated with cream",
+    "frozen yogurt swirl with toppings", "chocolate bark with mixed nuts", "peach cobbler with vanilla ice cream",
+    "hand-painted fondant cake details", "artisan nougat candy images", "blueberry muffin close-ups",
+    "molten white chocolate cake", "festive sugar cookie gift box", "soft and fluffy angel food cake",
+    "pumpkin spice latte dessert theme", "raspberry tart garnished with mint", "holiday-themed chocolate truffles",
+    "caramel-glazed profiteroles stack", "creamy banana pudding in jars", "elegant plated sorbet scoops",
+    "pastel ombre cake slice photography", "pecan pie with whipped topping", "strawberry and cream-filled doughnuts",
+    "trendy galaxy mirror glaze cakes", "pink lemonade cupcake swirls", "mint chocolate chip fudge bars",
+    "dark chocolate ganache-covered pastries", "cheesecake brownie swirl images", "whipped cream topped fruit salad",
+    "maple syrup glazed donuts", "chocolate peanut butter pie slices", "lavender infused honey cake",
+    "salted caramel apple pie", "rose water flavored macarons", "espresso chocolate layer cake",
+    "key lime pie with meringue", "Italian zeppole with powdered sugar", "guava pastelito flakiness",
+    "passion fruit mousse cake", "elderflower syrup drizzled pastries", "fig and goat cheese tartlets",
+    "orange blossom scented cupcakes", "cinnamon sugar churros with dip", "blackberry crumble with oats",
+    "salted dark chocolate caramel tarts", "mango sticky rice dessert", "pistachio rose water cake",
+    "lemon ricotta pancakes stack", "hazelnut praline cream puffs", "almond flour chocolate chip cookies",
+    "earl grey tea infused cake", "cranberry orange scones with clotted cream", "gingerbread cookies with royal icing",
+    "rhubarb pie with lattice crust", "apricot frangipane tart", "honeycomb candy close up",
+    "toffee brittle with sea salt", "marzipan sculpted desserts", "black forest cake with cherries",
+    "banana foster flambé", "saffron infused rice pudding", "chocolate dipped pretzel rods",
+    "coconut macaroons stack", "lime coconut bars", "chocolate banana bread slices",
+    "peanut butter fudge squares", "praline pecan ice cream", "dulce de leche cheesecake bites",
+    "red velvet cupcakes with cream cheese frosting", "apple cider donuts fresh", "berry filled crepes with fruit",
+    "sourdough discard chocolate cake","pumpkin cheesecake swirl bars", "lemon poppy seed loaf cake",
+    "chocolate soufflé rising in ramekin", "raspberry filled beignets", "blueberry streusel coffee cake",
+    "caramel apple cheesecake slices", "lemon meringue pie close up", "chocolate hazelnut crepes",
+    "strawberry rhubarb pie slices", "vanilla bean panna cotta with berries", "chocolate dipped biscotti",
+    "pecan praline candy", "mini chocolate bundt cakes", "raspberry white chocolate scones",
+    "chocolate dipped strawberries with sprinkles", "Italian rainbow cookies", "key lime cheesecake bars",
+    "chocolate peanut butter fudge", "apple pie with cheddar cheese", "chocolate covered cherries",
+    "coconut cream filled doughnuts", "lemon bars with powdered sugar", "chocolate ganache tart",
+    "blueberry pancakes with whipped cream", "chocolate raspberry truffles", "cinnamon sugar palmiers",
+    "chocolate dipped marshmallows", "pumpkin pie with whipped cream", "chocolate dipped orange peels",
+    "strawberry mousse cups", "chocolate dipped pretzels with caramel", "lemon poppy seed muffins",
+    "chocolate peanut butter cups", "apple crumble pie", "chocolate dipped figs", "raspberry jam filled doughnuts",
+    "chocolate dipped rice krispie treats", "peach melba dessert", "chocolate dipped shortbread cookies",
+    "chocolate dipped waffle cones", "chocolate dipped ladyfingers", "chocolate dipped pineapple",
+    "chocolate dipped kiwi slices", "chocolate dipped apricots", "chocolate dipped candied ginger",
+    "chocolate dipped peanut brittle", "chocolate dipped graham crackers", "chocolate dipped almond roca",
+    "chocolate dipped candied orange peel", "chocolate dipped macaroons", "chocolate dipped marshmallows with coconut",
+    "chocolate dipped pretzel sticks", "chocolate dipped dried cranberries", "chocolate dipped candied violets",
+    "chocolate dipped candied rose petals", "chocolate dipped coffee beans", "chocolate dipped sesame snaps",
+    "chocolate dipped candied chestnuts", "chocolate dipped marzipan fruits", "chocolate dipped candied mint leaves"
+]
+
+# Massive list of search terms for non-dessert-related images
+# CHANGE THIS TO YOUR OWN SEARCH TERMS and rename the variable
+non_dessert_search_terms = [
+    "grilled chicken recipes", "vegetarian salad images", "seafood pasta photos", "beef stew pictures", 
+    "tofu stir-fry images", "vegetable curry photos", "roasted vegetable dishes", "sushi rolls images", 
+    "sandwich designs", "wraps and rolls photos", "pizza toppings images", "pasta dishes photos", 
+    "soup recipes images", "bread baking pictures", "cheese platter designs", "charcuterie board photos", 
+    "casserole dishes images", "quiche recipes photos", "taco fillings images", "steak grilling techniques", 
+    "BBQ ribs presentation", "gourmet burger images", "seafood paella photography", "plant-based protein dishes", 
+    "stuffed bell pepper recipes", "homemade dumpling images", "ramen bowl close-ups", "sizzling fajitas on skillet", 
+    "avocado toast variations", "bruschetta appetizer images", "poke bowl ingredients", "fried rice in wok", 
+    "grilled salmon plating", "Mediterranean mezze platter", "classic Italian risotto", "fresh spring roll images", 
+    "omelette breakfast ideas", "pork belly dishes", "vegan buddha bowl photography", "Greek gyro sandwich images", 
+    "creamy mashed potato sides", "hearty lentil stew photos", "kebab skewers grilling", "dim sum platter photography", 
+    "Asian noodle bowl presentations", "shakshuka tomato egg dish", "exotic curry bowl images", "homemade pickled vegetable jars", 
+    "rustic farm-to-table salads", "French onion soup photography", "cornbread and chili pairing", "buffalo wings dipping sauces", 
+    "artisan homemade pasta", "teriyaki chicken bowls", "vegan jackfruit tacos", "korean bibimbap bowl images", 
+    "fresh ceviche presentation", "fancy deviled eggs designs", "ratatouille vegetable stew", "gourmet grilled cheese sandwiches", 
+    "falafel wrap fillings", "roast duck with glaze", "homemade gnocchi dishes", "buttery lobster roll photography", 
+    "colorful grain bowl images", "rustic wood-fired pizza toppings", "elegant amuse-bouche plating", "smoked salmon canapés", 
+    "stuffed mushroom appetizers", "artichoke dip presentations", "homemade sushi burritos", "luxury seafood platters", 
+    "farmers market vegetable displays", "whole roasted fish images", "spicy ramen noodle dishes", "stuffed pasta shells",
+    "vegetable stir-fry wok action", "street food taco stands", "grilled kabob platters", "cajun seafood boil trays",
+    "homemade bone broth photography", "Vietnamese pho bowl images", "vegan sushi roll presentations", "elaborate picnic spreads",
+    "gourmet soup dumpling close-ups", "classic bolognese pasta", "handmade tortilla pressing", "pesto pasta twirl images",
+    "wild mushroom risotto plating", "garlic butter shrimp photos", "szechuan pepper dishes", "steamed bao bun fillings",
+    "homemade ramen broth photography", "freshly caught fish displays", "whole roast chicken carving", "Persian rice dish designs",
+    "elegant high-end restaurant dishes", "Japanese kaiseki meal presentations", "dim sum bamboo steamers", "grilled vegetables with balsamic glaze",
+    "seared scallops with lemon butter", "pan-fried gyoza dumplings", "crispy skin barramundi fillet", "braised lamb shanks with rosemary",
+    "chicken tikka masala with naan bread", "shrimp and grits with andouille sausage", "spinach and artichoke stuffed chicken",
+    "buffalo cauliflower bites with ranch", "crab cakes with lemon aioli", "eggplant parmesan stacks", "mussels in white wine sauce",
+    "chicken pot pie with flaky pastry", "prime rib with horseradish cream", "clam linguine with garlic and parsley",
+    "saffron infused paella with chorizo", "caramelized onion and goat cheese tart", "shrimp scampi with angel hair pasta",
+    "spicy gochujang chicken wings", "smoked salmon eggs benedict", "roasted beet and goat cheese salad", "vegan lentil shepherd's pie",
+    "authentic spanish tapas spread", "japanese tempura platter with dipping sauce", "fresh oyster bar with mignonette",
+    "seafood chowder in sourdough bread bowl", "duck confit with potato gratin", "charred octopus with paprika",
+    "smoked trout with dill cream cheese", "lamb tagine with couscous", "pan-seared duck breast with cherry reduction",
+    "beef wellington with truffle sauce", "fresh uni sushi nigiri", "lobster thermidor with parmesan crust",
+    "braised short ribs with creamy polenta", "wild caught sea bass with lemon caper sauce", "pork tenderloin with apple chutney glaze",
+    "chicken korma with cashew sauce", "shrimp fra diavolo with linguine", "classic french onion soup with gruyere",
+    "hummus with warm pita bread", "handmade ravioli with sage butter sauce", "teriyaki salmon bowl with sesame seeds",
+    "cajun jambalaya with chicken and sausage", "vietnamese summer rolls with peanut sauce", "mediterranean grilled vegetable skewers",
+    "buttery lobster tail with drawn butter", "pepper crusted tuna steak with wasabi aioli", "hearty beef bourguignon with red wine",
+    "argentinian empanadas with chimichurri sauce", "grilled asparagus with hollandaise sauce", "homemade gazpacho with cucumber and tomato",
+    "caribbean jerk chicken with mango salsa", "spiced lentil soup with coconut milk", "caprese salad with balsamic glaze",
+    "vegan tempeh stir fry with peanut sauce", "authentic mexican mole poblano", "japanese tonkatsu with shredded cabbage",
+    "fresh cod fish and chips with tartar sauce", "seared foie gras with fig jam", "prosciutto wrapped melon appetizers",
+    "escargot with garlic herb butter", "paella with rabbit and snails", "bouillabaisse seafood stew",
+    "coq au vin with pearl onions", "moussaka with bechamel sauce", "osso buco with gremolata",
+    "souffle with cheese and herbs", "tarte flambee with bacon and onions", "beef stroganoff with sour cream",
+    "calamari fritti with marinara sauce", "frittata with seasonal vegetables", "ratatouille with crusty bread",
+    "risotto with porcini mushrooms", "salad nicoise with tuna and olives", "spanakopita with feta cheese",
+    "tamales with pork and chili", "thai green curry with eggplant", "tortilla espanola with potatoes and onions",
+    "vegetable tagine with preserved lemons", "wonton soup with bok choy", "zucchini fritters with tzatziki",
+    "chorizo and potato hash", "egg curry with coconut milk", "fajita bowls with guacamole", "green bean casserole with crispy onions",
+    "jambon beurre sandwiches", "kimchi fried rice with egg", "lasagna with ricotta and mozzarella", "meatloaf with mashed potatoes",
+    "nachos with melted cheese and jalapenos", "pad thai with shrimp and peanuts", "quinoa salad with roasted vegetables",
+    "ribeye steak with garlic butter", "salmon patties with dill sauce", "shepherd's pie with lamb and vegetables",
+    "tofu scramble with avocado", "udon noodle soup with tempura", "veal piccata with lemon caper sauce",
+    "wild rice salad with cranberries", "yellow curry with potatoes and carrots"
+]
+
+s = Sync()
+v = Verifier()
+
+#this line is what triggers the image generation
+for i in range(20):
+    s.makeImages(dessert_search_terms, non_dessert_search_terms, 'dessert', 'non_dessert')
+
+#this line deletes the images that are corrupted
+dirs = ['dataset/dessert', 'dataset/non_dessert']
+for i in dirs:
+    v.delete_corrupted_images(i)
